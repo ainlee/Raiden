@@ -1,0 +1,27 @@
+{
+  "name": "2.5D-shooting-game",
+  "version": "0.0.1",
+  "description": "2.5D縱向卷軸戰機射擊遊戲",
+  "main": "dist/main.js",
+  "scripts": {
+    "dev": "webpack serve --mode development",
+    "build": "webpack --mode production",
+    "test": "jest --config jest.config.js"
+  },
+  "dependencies": {
+    "howler": "^2.2.3",
+    "localforage": "^1.10.0",
+    "phaser": "^3.70.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "jest": "^29.6.2",
+    "jest-environment-jsdom": "^30.0.0-beta.3",
+    "ts-jest": "^29.3.4",
+    "ts-loader": "^9.4.4",
+    "typescript": "^5.2.2",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1"
+  }
+}
