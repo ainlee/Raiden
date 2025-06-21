@@ -1,9 +1,24 @@
-# 專案規格書 v0.1.2
+# 專案規格書 v0.2.1
+<!-- 2025-06-21 更新：v0.2.1 新增WebSocket實作細節 -->
 
-## 專案概述
-2.5D視角射擊遊戲，結合橫向卷軸與立體景深效果，採用 TypeScript + Phaser3 框架開發。
+## 架構圖表
+```mermaid
+classDiagram
+  class PerformanceMonitor {
+    -metrics: PerformanceMetrics
+    -sampler: AdaptiveSampler
+    -lastUpdate: number
+    +update(scene: Phaser.Scene): void
+    +getMetrics(): PerformanceMetrics
+  }
 
-**開發伺服器配置**：
+  class AdaptiveSampler {
+    -samplingInterval: number
+    +adjustSamplingInterval(metrics: PerformanceMetrics): void
+  }
+
+  PerformanceMonitor --> AdaptiveSampler
+```
 - 預設網址：http://localhost:5501
 - 執行指令：`npm run dev`
 
@@ -13,6 +28,24 @@
 - 物理引擎：Arcade Physics (內建)
 - 跨平台支援：Web/Electron/Cordova
 - 網路傳輸：WebSocket 雙向即時通訊
+  ```mermaid
+  sequenceDiagram
+    Client->>Server: 建立WS連線 (wss://game.example.com/ws)
+    Server-->>Client: 發送初始遊戲狀態
+    loop 幀同步
+        Client->>Server: 傳送操作指令
+        Server-->>Client: 廣播遊戲狀態
+    end
+  ```
+- 連線保活機制：
+  - 心跳間隔：30秒
+  - 逾時重試次數：3次
+- 資源目錄規範：
+  - sprites: 角色/物件動畫圖集
+  - parallax:
+    - background: 遠景卷軸
+    - midground: 中景動態元素
+    - foreground: 近景裝飾物件
 
 ## 技術架構
 ```mermaid
@@ -23,6 +56,8 @@ graph TD
     C --> E[實體組件系統]
     B --> F[Node.js後端]
     F --> G[Redis 狀態管理]
+    D --> H[效能監控系統]
+    E --> H
 ```
 
 ## 核心功能
@@ -64,6 +99,11 @@ graph TD
   - 主角動畫：`char_main_{動作名稱}_v{版本號}`
   - 版本號格式：`0.1.2 → MAJOR.MINOR.PATCH`
   - 影格命名：`Raiden-1P (圖層 {序號}).aseprite`
+  
+## 版本變更履歷
+| 版本   | 更新內容               | 負責人 | 日期       |
+|--------|----------------------|--------|------------|
+| v0.2.0 | 新增類別圖與狀態機圖   | Roo    | 2025-06-12 |
 
 ## 測試案例要求
 ```typescript

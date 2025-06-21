@@ -5,6 +5,11 @@ export interface WindowParameters {
 }
 
 export class DynamicWindowAdjuster {
+  /** 處理畫面縮放調整 */
+  handleResize() {
+    // 可加入具體的視窗調整邏輯
+    console.log('處理視窗縮放調整...');
+  }
   private baseWindowSize: number;
   private currentWindowSize: number;
   

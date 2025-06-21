@@ -2,10 +2,10 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "NodeNext",
     "strict": true,
     "esModuleInterop": true,
-    "skipLibCheck": true,
+    "skipLibCheck": false,
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
     "baseUrl": "./src",
@@ -14,7 +14,9 @@
       "@systems/*": ["systems/*"],
       "@entities/*": ["entities/*"]
     },
-    "types": ["phaser", "jest"]
+    "types": ["node", "jest", "phaser", "@types/phaser"],
+    "strictNullChecks": true,
+    "sourceMap": true
   },
   "include": ["src/**/*", "test/**/*.ts"],
   "exclude": ["node_modules"]

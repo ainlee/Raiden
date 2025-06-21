@@ -1,20 +1,41 @@
-# 專案待辦清單 v0.01
+# 專案待辦清單 v0.03
+## 更新歷史
+- 2025/6/21 v0.04
+  - 新增README.md文件
+  - 更新WebSocket規格章節
+- 2025/6/13 v0.03
+  - 新增3D遷移技術驗證任務
+  - 新增WebSocket壓力測試項目
+  - 更新規格書整合要求
+- 2025/6/12 v0.02
+  - 新增玩家圖像資源載入驗證任務
+  - 更新文件維護進度
 
 ## 核心系統開發
 - [x] 實作自適應取樣系統(AdaptiveSampler)
 - [x] 建立動態視窗調整器(DynamicWindowAdjuster)
 - [x] 效能監控儀表板(PerformanceMonitor)
 - [x] 多裝置輸入控制系統
+- [ ] 3D遷移技術驗證（需確認Phaser3-Spline插件相容性）
+- [ ] WebSocket連線壓力測試（500併發測試）
+- [x] 更新規格書WebSocket實作細節（參照spec.md第30行規範）
+- [x] 建立卷軸資源目錄結構
+  - assets/parallax/background
+  - assets/parallax/midground
+  - assets/parallax/foreground
 
 ## 測試任務
 - [ ] 撰寫場景管理測試案例
 - [ ] 建立CI/CD管道
 - [ ] ~~達成50%測試覆蓋率~~ → 修正為80%
+- [ ] 新增資源載入驗證測試
 
 ## 文件維護
 - [x] 更新技術規格書至v0.1.2
+- [x] 新增偽3D技術規範(v0.2.0)
 - [x] 更新開發環境 Port 設定
-- [x] 更新主角動畫資源
+- [x] 更新主角動畫資源 (v0.1.3)
+- [x] 新增架構圖表生成功能
 - [ ] 補齊API文件
 - [x] 建立技術債務清單
 - [ ] 每週檢視技術債務進度
