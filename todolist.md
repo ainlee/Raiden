@@ -1,5 +1,8 @@
-# 專案待辦清單 v0.03
+# 專案待辦清單 v0.05
 ## 更新歷史
+- 2025/6/21 v0.05
+  - 新增測試場景功能
+  - 更新規格書測試章節
 - 2025/6/21 v0.04
   - 新增README.md文件
   - 更新WebSocket規格章節
@@ -12,19 +15,27 @@
   - 更新文件維護進度
 
 ## 核心系統開發
+- [x] 重建專案架構 (2025-06-21)
+- [x] 整合等角投影系統
 - [x] 實作自適應取樣系統(AdaptiveSampler)
 - [x] 建立動態視窗調整器(DynamicWindowAdjuster)
 - [x] 效能監控儀表板(PerformanceMonitor)
 - [x] 多裝置輸入控制系統
-- [ ] 3D遷移技術驗證（需確認Phaser3-Spline插件相容性）
+- [x] 初始化TypeScript配置 (2025-06-21)
+- [x] 建立基本遊戲場景結構 (2025-06-21)
 - [ ] WebSocket連線壓力測試（500併發測試）
 - [x] 更新規格書WebSocket實作細節（參照spec.md第30行規範）
 - [x] 建立卷軸資源目錄結構
   - assets/parallax/background
   - assets/parallax/midground
   - assets/parallax/foreground
+- [ ] 實作垂直卷軸背景系統
+- [ ] 建立敵機生成波次管理器
+- [ ] 添加碰撞檢測事件處理
+- [ ] 解決Phaser類型定義問題 (技術債務)
 
 ## 測試任務
+- [x] 建立測試關卡場景
 - [ ] 撰寫場景管理測試案例
 - [ ] 建立CI/CD管道
 - [ ] ~~達成50%測試覆蓋率~~ → 修正為80%

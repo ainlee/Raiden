@@ -1,24 +1,32 @@
 {
-  "name": "2.5D-shooting-game",
-  "version": "0.0.1",
+  "name": "raiden",
+  "version": "1.0.0",
+  "description": "本專案為縱向捲軸射擊遊戲，基於Phaser3遊戲引擎開發，實作自適應效能監控系統與動態資源管理功能。支援Web、Electron與行動裝置平台。",
+  "main": "index.js",
   "scripts": {
-    "dev": "webpack serve --mode development --port 5510",
-    "build": "webpack --mode production",
-    "test": "jest --coverage",
-    "kill-ports": "npx kill-port 5510 5500",
-    "clean": "Remove-Item -Recurse -Force dist,node_modules/.cache"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "typecheck": "tsc --noEmit",
+    "build": "vite build",
+    "dev": "vite --force"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ainlee/Raiden.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ainlee/Raiden/issues"
+  },
+  "homepage": "https://github.com/ainlee/Raiden#readme",
+  "dependencies": {
+    "vite-plugin-html": "^3.2.2"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.14",
-    "@types/node": "^20.11.28",
-    "html-webpack-plugin": "^5.6.0",
-    "jest": "^29.7.0",
-    "phaser": "^3.60.0-beta.23",
-    "ts-jest": "^29.4.0",
-    "ts-loader": "^9.5.1",
-    "typescript": "^5.3.3",
-    "webpack": "^5.91.0",
-    "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^4.15.1"
+    "@types/node": "^24.0.3",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
   }
 }
