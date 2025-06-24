@@ -1,19 +1,22 @@
 import { defineConfig } from 'vite'
-import path from 'path'
+import { resolve } from 'path'
 
 export default defineConfig({
   build: {
-    outDir: 'public',
+    outDir: 'dist',
     assetsDir: 'assets',
     emptyOutDir: true,
     rollupOptions: {
       input: {
-        main: path.resolve(__dirname, 'src/main.ts')
-      }
+        main: resolve(__dirname, 'index.html'),
+        test: resolve(__dirname, 'test/index.html')
+      },
+      preserveEntrySignatures: 'strict'
     }
   },
   server: {
     port: 5500,
-    hmr: true
+    hmr: true,
+    open: '/test/'
   }
 })

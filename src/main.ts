@@ -1,7 +1,6 @@
 // Phaser3遊戲初始化設定
 import Phaser from 'phaser';
 import MainScene from './scenes/MainScene';
-import TestScene from './scenes/TestScene';
 
 /**
  * Phaser遊戲配置物件
@@ -19,7 +18,7 @@ const config: Phaser.Types.Core.GameConfig = {
       debug: false
     }
   },
-  scene: [MainScene, TestScene],
+  scene: [MainScene],
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH

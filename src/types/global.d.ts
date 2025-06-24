@@ -1,32 +1,19 @@
-// 全域類型定義
-declare module 'phaser' {
-  import * as Phaser from 'phaser';
-  export = Phaser;
+/** 立方體座標與尺寸定義 */
+export interface Cube {
+  x: number;
+  y: number;
+  z: number;
+  width: number;
+  height: number;
+  depth: number;
 }
 
-interface Window {
-  Phaser: typeof Phaser;
-}
-
-// 擴充Phaser命名空間
+/** 擴充Phaser類型定義 */
 declare namespace Phaser {
-  interface GameConfig {
-    /** 自定義物理系統設定 */
-    physics?: {
-      /** 預設物理系統 */
-      default: 'arcade' | 'matter';
-      /** 物理系統設定 */
-      arcade?: {
-        /** 重力設定 */
-        gravity?: { x: number; y: number };
-        /** 除錯模式 */
-        debug?: boolean;
-      };
-    };
-    /** 等角投影插件設定 */
-    isoPlugin?: {
-      /** 是否啟用 */
-      enable: boolean;
-    };
+  namespace Events {
+    interface EventEmitter {
+      on(event: string, fn: Function, context?: any): this;
+      emit(event: string, ...args: any[]): boolean;
+    }
   }
 }

@@ -22,9 +22,12 @@
   },
   "homepage": "https://github.com/ainlee/Raiden#readme",
   "dependencies": {
+    "phaser": "^3.70.0",
+    "phaser3-plugin-isometric": "^0.0.7",
     "vite-plugin-html": "^3.2.2"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
     "@types/node": "^24.0.3",
     "typescript": "^5.8.3",
     "vite": "^6.3.5"

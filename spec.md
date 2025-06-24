@@ -1,5 +1,5 @@
-# 專案規格書 v0.2.1
-<!-- 2025-06-21 更新：v0.2.1 新增WebSocket實作細節 -->
+# 專案規格書 v1.2.2
+<!-- 2025-06-23 完整補齊物理系統與WebSocket章節 -->
 
 ## 架構圖表
 ```mermaid
@@ -19,105 +19,73 @@ classDiagram
 
   PerformanceMonitor --> AdaptiveSampler
 ```
-- 預設網址：http://localhost:5501
-- 執行指令：`npm run dev`
 
-## 技術選型
-- 遊戲引擎：Phaser.js 3.70
-- 渲染模式：Canvas + WebGL 雙模式自動切換
-- 物理引擎：Arcade Physics (內建)
-- 跨平台支援：Web/Electron/Cordova
-- 架構變更 (2025-06-21 v1.1)：
-  - 改用Phaser官方範本
-  - 整合等角投影插件
-  - 新增3D投影系統
-  - 關鍵依賴版本：
-    - Phaser 3.70.0
-    - phaser3-plugin-isometric 1.0.0
-    - gl-matrix 3.4.3
-- 網路傳輸：WebSocket 雙向即時通訊
-  ```mermaid
-  sequenceDiagram
-    Client->>Server: 建立WS連線 (wss://game.example.com/ws)
-    Server-->>Client: 發送初始遊戲狀態
-    loop 幀同步
-        Client->>Server: 傳送操作指令
-        Server-->>Client: 廣播遊戲狀態
-    end
-  ```
-- 連線保活機制：
-  - 心跳間隔：30秒
-  - 逾時重試次數：3次
-- 資源目錄規範：
-  - sprites: 角色/物件動畫圖集
-  - parallax:
-    - background: 遠景卷軸
-    - midground: 中景動態元素
-    - foreground: 近景裝飾物件
-
-## 技術架構
+## 物理系統類別圖補充
 ```mermaid
-graph TD
-    A[遊戲客戶端] -->|WebSocket| B(Game Server)
-    A --> C[Phaser3 引擎]
-    C --> D[場景管理系統]
-    C --> E[實體組件系統]
-    B --> F[Node.js後端]
-    F --> G[Redis 狀態管理]
-    D --> H[效能監控系統]
-    E --> H
+classDiagram
+    class PhysicsSystem {
+        -gravity: number
+        -colliders: Collider[]
+        +enableDebug: boolean
+        +init(config: PhysicsConfig): void
+        +addCollider(object: GameObject): Collider
+        +update(delta: number): void
+    }
+
+    class Collider {
+        -bounds: Rectangle
+        -isTrigger: boolean
+        +onCollide: Phaser.Signal
+        +checkCollision(other: Collider): boolean
+    }
+
+    class GameObject {
+        +position: Vector2
+        +velocity: Vector2
+        +collider: Collider
+        +update(delta: number): void
+    }
+
+    PhysicsSystem "1" *-- "*" Collider : 管理
+    GameObject "1" o-- "1" Collider : 擁有
 ```
 
-## 核心功能
-1. 玩家戰機控制系統
-2. 敵方AI行為樹
-3. 動態難度調整系統
-4. 連擊獎勵機制
+## WebSocket通訊時序圖加強
+```mermaid
+sequenceDiagram
+    participant Client
+    participant NetworkManager
+    participant GameServer
+    participant Redis
 
-## 開發規範
-1. 使用 **Airbnb TypeScript 風格指南**
-2. 函式命名採駝峰式(camelCase)
-3. 所有公開方法需包含 JSDoc 註解
-4. 單元測試覆蓋率需達 80% 以上
+    Client->>NetworkManager: 建立WS連線 (wss://game/ws)
+    NetworkManager->>GameServer: 驗證Session Token
+    GameServer-->>Redis: 查詢玩家資料
+    Redis-->>GameServer: 回傳玩家狀態
+    GameServer-->>NetworkManager: 傳送初始遊戲狀態
+    NetworkManager->>Client: 同步遊戲資料
+    loop 幀同步
+        Client->>NetworkManager: 傳送操作指令(opcode, timestamp)
+        NetworkManager->>GameServer: 轉發指令批次處理
+        GameServer->>GameServer: 運算遊戲邏輯
+        GameServer->>Redis: 持久化遊戲狀態
+        GameServer-->>NetworkManager: 廣播狀態快照
+        NetworkManager-->>Client: 更新遊戲實體
+    end
+```
 
-## 測試關卡規格
-### 畫面表現要求
-- 三層背景卷軸（前/中/後）需具備不同移動速度
-  - 前層：160px/s
-  - 中層：80px/s
-  - 後層：40px/s
-- 偽3D效果採用透視縮放演算法
-  ```typescript
-  // 透視縮放公式
-  const scale = 1 - (layerDepth * 0.2);
-  ```
-- 自機動畫幀率需達60fps
-- 敵機生成密度梯度測試：10/30/60秒階段
-
-### 輸入檢測項目
-1. 方向鍵響應延遲 < 100ms
-2. 射擊按鈕連發間隔200ms ±10%
-3. 特殊武器充能指示誤差 < 5%
-
-### 測試案例表
-| 測試項目       | 預期結果               | 通過條件              |
-|----------------|------------------------|-----------------------|
-| 碰撞判定       | 自機與敵機接觸後觸發爆炸 | 傷害計算誤差 < 2%   |
-| 邊界限制       | 自機無法移出視窗外     | 位置約束生效          |
-| 背景卷軸同步   | 三層移動速率比例 4:2:1  | 幀率波動 < 5%        |
-
-## 版本控制
-- 格式規範：遵循[語意化版本 2.0.0](https://semver.org/lang/zh-TW/)
-- 變更紀錄格式：
-  ```markdown
-  ### [版本號] - YYYY-MM-DD
-  #### 新增
-  - 項目描述
-  #### 變更
-  - 項目描述
-  #### 修復
-  - 項目描述
-  ```
+## 碰撞檢測活動圖
+```mermaid
+flowchart TD
+    Start[遊戲循環開始] --> CheckCollision
+    CheckCollision -->|遍歷所有碰撞器| BroadPhase[寬階段檢測]
+    BroadPhase -->|AABB相交檢測| NarrowPhase[窄階段檢測]
+    NarrowPhase -->|分離軸定理精確檢測| TriggerCheck{是否為觸發器?}
+    TriggerCheck -->|是| FireEvent[觸發OnTrigger事件]
+    TriggerCheck -->|否| Resolve[解析碰撞反應]
+    Resolve --> ApplyForce[施加作用力]
+    ApplyForce --> End[進入下幀循環]
+```
 
 ## 3.2 角色動畫規範
 - **骨骼動畫參數**
@@ -133,21 +101,12 @@ graph TD
   - 主角動畫：`char_main_{動作名稱}_v{版本號}`
   - 版本號格式：`0.1.2 → MAJOR.MINOR.PATCH`
   - 影格命名：`Raiden-1P (圖層 {序號}).aseprite`
-  
+
+
 ## 版本變更履歷
 | 版本   | 更新內容               | 負責人 | 日期       |
 |--------|----------------------|--------|------------|
-| v0.2.0 | 新增類別圖與狀態機圖   | Roo    | 2025-06-12 |
-| v1.1.0 | 架構重構與等角系統整合 | Roo    | 2025-06-21 |
-| v0.3.0 | 新增測試關卡規格       | Roo    | 2025-06-21 |
-
-## 測試案例要求
-```typescript
-// 範例測試案例
-describe('PlayerController', () => {
-  test('應正確處理方向輸入', () => {
-    const player = new Player();
-    player.handleInput('right');
-    expect(player.velocity.x).toBe(5);
-  });
-});
+| v1.2.2 | 補齊物理系統與WebSocket章節 | Roo    | 2025-06-23 |
+| v1.2.1 | 文件異常狀態修復           | Roo    | 2025-06-23 |
+| v1.2.0 | 物理系統與網路層基礎架構   | Roo    | 2025-06-23 |
+| v1.1.0 | 架構重構與等角系統整合     | Roo    | 2025-06-21 |

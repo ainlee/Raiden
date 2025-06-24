@@ -16,6 +16,11 @@ flowchart TD
 
 ### 3. 版本更新記錄
 ```markdown
+### [v0.4.0] - 2025-06-23
+- 新增物理系統核心模組 (PhysicsSystem)
+- 實作WebSocket雙向通訊協議
+- 更新規格書至v1.2.0
+
 ### [v0.3.0] - 2025-06-12
 - 新增偽3D技術規範文件
 - 建立3D遷移計畫架構圖
@@ -36,6 +41,8 @@ gantt
     玩家控制系統           :done, des1, 2025-06-10, 3d
     動態難度調整系統       :done, des2, 2025-06-11, 2d
     效能監控系統           :done, des3, 2025-06-12, 2d
+    物理系統核心          :done, des5, 2025-06-23, 1d
+    WebSocket通訊協議      :done, des6, 2025-06-23, 1d
     連擊獎勵機制           :active, des4, 2025-06-13, 2d
 
     section 自動化流程
@@ -52,6 +59,11 @@ gantt
 ### 5. 自動化驗證
 ```powershell
 npm run gen:diagrams && npm test
+
+### [2025-06-23] 開發日誌
+- 實作PhysicsSystem碰撞檢測模組
+- 整合WebSocketClient至主場景
+- 新增網路通訊單元測試案例
 
 ### [2025-06-13] 開發日誌
 - 新增偽3D透視系統架構
