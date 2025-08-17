@@ -1,35 +1,21 @@
 {
   "name": "raiden",
   "version": "1.0.0",
-  "description": "本專案為縱向捲軸射擊遊戲，基於Phaser3遊戲引擎開發，實作自適應效能監控系統與動態資源管理功能。支援Web、Electron與行動裝置平台。",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "typecheck": "tsc --noEmit",
-    "build": "vite build",
-    "dev": "vite --force"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ainlee/Raiden.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/ainlee/Raiden/issues"
-  },
-  "homepage": "https://github.com/ainlee/Raiden#readme",
   "dependencies": {
-    "phaser": "^3.70.0",
-    "phaser3-plugin-isometric": "^0.0.7",
-    "vite-plugin-html": "^3.2.2"
+    "phaser": "^3.60.0"
   },
   "devDependencies": {
-    "@types/jest": "^30.0.0",
-    "@types/node": "^24.0.3",
-    "typescript": "^5.8.3",
-    "vite": "^6.3.5"
+    "typescript": "^5.2.2",
+    "vite": "^5.0.11",
+    "vitest": "^1.2.2",
+    "@vitest/coverage-istanbul": "^1.2.2",
+    "@types/node": "^20.10.3"
   }
 }

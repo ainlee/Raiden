@@ -20,6 +20,37 @@ classDiagram
   PerformanceMonitor --> AdaptiveSampler
 ```
 
+## 等角投影碰撞系統規範 v1.2.3 (2025-06-26)
+```mermaid
+classDiagram
+    class IsometricCollider {
+        -cube: Cube
+        +onCollide: Phaser.Events.EventEmitter
+        +checkIntersection(other: IsometricCollider): boolean
+        +checkCubeIntersection(a: Cube, b: Cube): boolean
+    }
+
+    class PhysicsSystem {
+        -colliders: IsometricCollider[]
+        -playerCollider?: IsometricCollider
+        +addIsometricCollider(collider: IsometricCollider, isPlayer: boolean): void
+    }
+
+    PhysicsSystem "1" *-- "*" IsometricCollider : 管理
+```
+
+## 資源加載規範 v1.2.3 (2025-06-26)
+```mermaid
+flowchart TD
+    Load[資源載入流程] --> PathCheck{路徑是否包含public/}
+    PathCheck -->|是| NormalLoad[正常載入]
+    PathCheck -->|否| Prepend[自動添加public/前綴]
+    Prepend --> NormalLoad
+    NormalLoad --> VersionCheck{是否有版本號}
+    VersionCheck -->|是| CacheBust[添加時間戳記]
+    VersionCheck -->|否| SkipCache[跳過快取處理]
+```
+
 ## 物理系統類別圖補充
 ```mermaid
 classDiagram
@@ -106,6 +137,12 @@ flowchart TD
 ## 版本變更履歷
 | 版本   | 更新內容               | 負責人 | 日期       |
 |--------|----------------------|--------|------------|
+| v1.2.2 | 補齊物理系統與WebSocket章節 | Roo    | 2025-06-23 |
+| v1.2.1 | 文件異常狀態修復           | Roo    | 2025-06-23 |
+| v1.2.0 | 物理系統與網路層基礎架構   | Roo    | 2025-06-23 |
+| v1.2.3 | 新增等角碰撞系統與資源加載規範 | Roo    | 2025-06-26 |
+| v1.2.4 | 簡化資源命名規則並新增雙人模式基礎 | Roo    | 2025-06-29 |
+| v1.2.5 | 實作動態資源載入器與型號擴充接口 | Roo    | 2025-06-29 |
 | v1.2.2 | 補齊物理系統與WebSocket章節 | Roo    | 2025-06-23 |
 | v1.2.1 | 文件異常狀態修復           | Roo    | 2025-06-23 |
 | v1.2.0 | 物理系統與網路層基礎架構   | Roo    | 2025-06-23 |

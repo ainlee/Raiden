@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { IsometricCollider } from '../systems/PhysicsSystem';
 
 export default class MainScene extends Phaser.Scene {
   physics!: Phaser.Physics.Arcade.ArcadePhysics;
@@ -11,8 +12,22 @@ export default class MainScene extends Phaser.Scene {
 
   preload() {
     // 載入自機資源
-    this.load.image('raiden1P', 'assets/sprites/Raiden-1P.png');
-    this.load.json('raiden1PAtlas', 'assets/sprites/Raiden-1P.json');
+    /**
+     * 初始化玩家資源載入
+     * @param {string} playerType - 玩家類型 (1P/2P)
+     * @param {string} model - 自機型號 (預設空值)
+     */
+    const loadPlayerAssets = (playerType: '1P' | '2P', model = '') => {
+      const prefix = model ? `Raiden-${model}-${playerType}` : `Raiden-${playerType}`;
+      
+      // 載入圖像資源
+      this.load.image(`raiden${playerType}`, `/assets/sprites/${prefix}.png`);
+      this.load.json(`raiden${playerType}Atlas`, `/assets/sprites/${prefix}.json`);
+    };
+
+    // 初始化預設機體 (1P/2P)
+    loadPlayerAssets('1P');
+    loadPlayerAssets('2P');
   }
 
   create() {
@@ -21,22 +36,23 @@ export default class MainScene extends Phaser.Scene {
     this.physics.world.setBounds(0, 0, 800, 600);
 
     // 初始化等角投影系統
-    this.cursors = this.input.keyboard.createCursorKeys();
+    if (this.input.keyboard) {
+      this.cursors = this.input.keyboard.createCursorKeys();
+    }
 
     // 建立玩家戰機
     // 初始化玩家與物理系統
-    this.player = this.add.sprite(400, 300, 'player');
+    this.player = this.add.sprite(400, 300, 'raiden1P');
     this.physics.add.existing(this.player);
     (this.player.body as Phaser.Physics.Arcade.Body).setCollideWorldBounds(true);
     
     // 註冊玩家碰撞器
     const playerCollider = new IsometricCollider({
+      scene: this,
       x: this.player.x,
       y: this.player.y,
-      z: 0,
       width: this.player.width,
-      height: this.player.height,
-      depth: 10
+      height: this.player.height
     });
     this.physics.addIsometricCollider(playerCollider, true);
     

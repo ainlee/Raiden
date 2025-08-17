@@ -29,7 +29,8 @@
   - assets/parallax/background
   - assets/parallax/midground
   - assets/parallax/foreground
-- [ ] 實作垂直卷軸背景系統
+- [ ] ~~實作垂直卷軸背景系統~~ → 優先度調整至v1.3
+- [x] 實作雙人模式基礎架構 @done(2025-06-29)
 - [ ] 建立敵機生成波次管理器
 - [x] 添加碰撞檢測事件處理 @done(2025-06-23)
 - [ ] 解決Phaser類型定義問題 (技術債務)
