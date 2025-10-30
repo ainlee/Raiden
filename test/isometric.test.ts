@@ -53,4 +53,68 @@ describe('等角投影系統測試', () => {
     physicsSystem.update();
     expect(collisionCount).toBe(1);
   });
+
+  // 邊界案例測試
+  test('高速移動穿透檢測', () => {
+    const physicsSystem = new PhysicsSystem();
+    const fastCollider = new IsometricCollider({
+      x: 0, y: 0, z: 0,
+      width: 5, height: 5, depth: 5
+    });
+    const targetCollider = new IsometricCollider({
+      x: 100, y: 0, z: 0,
+      width: 10, height: 10, depth: 10
+    });
+
+    physicsSystem.addIsometricCollider(fastCollider, true);
+    physicsSystem.addIsometricCollider(targetCollider);
+
+    let collisionDetected = false;
+    fastCollider.onCollide.on('collide', () => collisionDetected = true);
+
+    // 模擬高速移動 (速度超過碰撞體尺寸)
+    physicsSystem.update({ x: 150, y: 0 });
+    expect(collisionDetected).toBe(true);
+  });
+
+  test('邊緣碰撞檢測', () => {
+    const physicsSystem = new PhysicsSystem();
+    const edgeColliderA = new IsometricCollider({
+      x: 0, y: 0, z: 0,
+      width: 10, height: 10, depth: 10
+    });
+    const edgeColliderB = new IsometricCollider({
+      x: 10, y: 10, z: 10, // 邊緣接觸
+      width: 10, height: 10, depth: 10
+    });
+
+    physicsSystem.addIsometricCollider(edgeColliderA);
+    physicsSystem.addIsometricCollider(edgeColliderB);
+
+    let collisionCount = 0;
+    edgeColliderA.onCollide.on('collide', () => collisionCount++);
+
+    physicsSystem.update();
+    expect(collisionCount).toBe(1);
+  });
+
+  test('三實體疊加碰撞', () => {
+    const physicsSystem = new PhysicsSystem();
+    const collider1 = new IsometricCollider(testCubeA);
+    const collider2 = new IsometricCollider(testCubeB);
+    const collider3 = new IsometricCollider({
+      x: 2, y: 2, z: 2,
+      width: 15, height: 15, depth: 15
+    });
+
+    physicsSystem.addIsometricCollider(collider1);
+    physicsSystem.addIsometricCollider(collider2);
+    physicsSystem.addIsometricCollider(collider3);
+
+    let collisionEvents = 0;
+    collider1.onCollide.on('collide', () => collisionEvents++);
+
+    physicsSystem.update();
+    expect(collisionEvents).toBe(2); // 應與兩個碰撞體相交
+  });
 });

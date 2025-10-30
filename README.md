@@ -14,23 +14,26 @@
 # 安裝專案依賴
 npm install
 
-# 開發模式 (監聽檔案變更)
+# 開發模式 (監聽檔案變更，使用Vite熱重載)
 npm run dev
 
-# 生產環境建置
+# 生產環境建置 (輸出至dist目錄)
 npm run build
 ```
 
 ## 執行方式
 ```powershell
-# 啟動開發伺服器 (預設網址 http://localhost:5501)
+# 啟動開發伺服器 (預設網址 http://localhost:5500)
 npm run start
 
-# 執行單元測試
+# 執行單元測試 (含Phaser場景測試)
 npm test
 
-# 產出測試覆蓋率報告
+# 產出測試覆蓋率報告 (輸出至coverage目錄)
 npm run coverage
+
+# 執行OpenSpec驗證
+npx openspec validate --strict
 ```
 
 ## 文件架構
@@ -39,10 +42,11 @@ npm run coverage
 │   ├── scenes/     # 遊戲場景管理
 │   └── systems/    # 核心系統模組
 ├── test/           # 單元測試
-├── docs/           # 技術文件
-│   ├── spec.md     # 系統規格書
-│   ├── report.md   # 專案進度報告
-│   └── technical_debt.md # 技術債務追蹤
+├── openspec/       # OpenSpec規範文件
+│   ├── project.md  # 專案技術規格
+│   ├── changes/    # 變更提案
+│   └── specs/      # 系統規格書
+├── public/         # 靜態資源
 └── assets/         # 遊戲資源檔案
 ```
 
