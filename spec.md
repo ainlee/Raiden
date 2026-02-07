@@ -1,5 +1,5 @@
-# 專案規格書 v1.2.2
-<!-- 2025-06-23 完整補齊物理系統與WebSocket章節 -->
+# 專案規格書 v1.4.0
+<!-- 2025-10-31 新增自機添加系統規範 -->
 
 ## 架構圖表
 ```mermaid
@@ -118,31 +118,111 @@ flowchart TD
     ApplyForce --> End[進入下幀循環]
 ```
 
-## 3.2 角色動畫規範
-- **骨骼動畫參數**
-  - 最大骨骼數：48
-  - 幀間插值：貝茲曲線緩動
-- **幀率限制**
-  ```mermaid
-  flowchart LR
-      A[動畫類型] -->|過場動畫| B[30 FPS]
-      A -->|戰鬥動畫| C[60 FPS]
-  ```
-- **資源命名規則**
-  - 主角動畫：`char_main_{動作名稱}_v{版本號}`
-  - 版本號格式：`0.1.2 → MAJOR.MINOR.PATCH`
-  - 影格命名：`Raiden-1P (圖層 {序號}).aseprite`
+## 3.2 自機添加系統規範
+```mermaid
+flowchart TD
+    Start[開始添加] --> LoadConfig[載入機體設定檔]
+    LoadConfig --> Validate[驗證資源完整性]
+    Validate -->|成功| Register[註冊到玩家系統]
+    Validate -->|失敗| Error[顯示錯誤代碼]
+    Register --> Create[建立實體]
+    Create --> Init[初始化組件]
+    Init --> Done[完成添加]
+```
 
+**API使用範例：**
+```typescript
+// 從玩家選擇畫面添加自機
+function addPlayerShip(shipData: ShipConfig) {
+  const loader = new AssetScanner();
+  const isValid = loader.validateShipAssets(shipData);
+  
+  if (isValid) {
+    const ship = new PlayerShip(scene, shipData);
+    ship.registerInput();
+    ship.enableCollision();
+    return ship;
+  }
+  throw new Error('Invalid ship configuration');
+}
+```
+
+**資源兼容性處理：**
+- 舊版資源自動轉換為v1.4格式
+- 缺失資源使用預設替代品並記錄警告
+- 版本差異大於0.2時需手動遷移
+
+
+## 4. 資源管理規範 v1.3.0 (2025-10-31)
+
+## 5. 偽3D地圖系統 v1.5.0 (提案)
+```mermaid
+classDiagram
+    class Pseudo3DSystem {
+        +cameraTilt: number
+        +parallaxFactor: Vector2
+        +heightMap: Texture
+        +init(config: MapConfig): void
+        +updateCamera(): void
+        +warpTextureUV(uv: Vector2, height: number): Vector2
+    }
+
+    class MapConfig {
+        +tileSize: number
+        +maxAltitude: number
+        +textureStretch: number
+    }
+
+    Pseudo3DSystem "1" --> "1" MapConfig : 使用
+```
+
+### 相機系統參數
+| 參數名稱       | 類型    | 預設值 | 說明                 |
+|----------------|---------|--------|----------------------|
+| tiltAngle      | number  | 35     | 相機俯角(度)         |
+| parallaxFactor | Vector2 | [0.1,0.05] | 視差位移係數       |
+
+### 地形資源規範
+- 高度圖：1024x1024 PNG灰度圖
+- 紋理集：2048x2048 包含Mipmaps
+- 網格密度：每單位64像素
+```mermaid
+graph TD
+    assets[public/assets] --> characters
+    assets --> enemies
+    assets --> environment
+    assets --> effects
+    assets --> ui
+    characters --> player1P
+    characters --> player2P
+    player1P --> spritesheets
+    player1P --> animations
+    player1P --> variants
+```
+
+**命名規則：**
+- 玩家機體：`player{1|2}P/{資源類型}/檔案名稱`
+- 敵機分類：`enemies/[grunt|elite|boss]/功能_版本.副檔名`
+- 特效檔案：`effects/{類型}/序列幀_起始編號.png`
+
+**加載原則：**
+1. 使用相對路徑從public目錄開始
+2. 版本號遵循 semver 規範
+3. 動畫資源需提供JSON元數據
+
+## 端口配置
+- 開發模式：5555
+- 預覽模式：5555
+- 更新日期：2025-10-31
 
 ## 版本變更履歷
 | 版本   | 更新內容               | 負責人 | 日期       |
 |--------|----------------------|--------|------------|
-| v1.2.2 | 補齊物理系統與WebSocket章節 | Roo    | 2025-06-23 |
-| v1.2.1 | 文件異常狀態修復           | Roo    | 2025-06-23 |
-| v1.2.0 | 物理系統與網路層基礎架構   | Roo    | 2025-06-23 |
-| v1.2.3 | 新增等角碰撞系統與資源加載規範 | Roo    | 2025-06-26 |
-| v1.2.4 | 簡化資源命名規則並新增雙人模式基礎 | Roo    | 2025-06-29 |
+| v1.4.0 | 新增自機添加系統與開發指南 | Roo    | 2025-10-31 |
+| v1.3.0 | 資源管理規範更新       | Roo    | 2025-10-31 |
 | v1.2.5 | 實作動態資源載入器與型號擴充接口 | Roo    | 2025-06-29 |
+| v1.2.4 | 簡化資源命名規則並新增雙人模式基礎 | Roo    | 2025-06-29 |
+| v1.2.3 | 新增等角碰撞系統與資源加載規範 | Roo    | 2025-06-26 |
 | v1.2.2 | 補齊物理系統與WebSocket章節 | Roo    | 2025-06-23 |
 | v1.2.1 | 文件異常狀態修復           | Roo    | 2025-06-23 |
 | v1.2.0 | 物理系統與網路層基礎架構   | Roo    | 2025-06-23 |

@@ -1,19 +1,25 @@
 {
   "compilerOptions": {
-    "target": "ES6",
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "module": "ESNext",
+    "skipLibCheck": true,
+    "jsx": "react-jsx",
     "moduleResolution": "node",
-    "typeRoots": ["node_modules/@types", "./src/types"],
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
     "strict": true,
-    "outDir": "./dist",
-    "rootDir": "./src",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
       "*": ["node_modules/*"]
     },
-    "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "skipLibCheck": true
+    "allowSyntheticDefaultImports": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]

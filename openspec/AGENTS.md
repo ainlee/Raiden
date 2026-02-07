@@ -2,8 +2,9 @@
 
 Instructions for AI coding assistants using OpenSpec for spec-driven development.
 
-## TL;DR Quick Checklist
+<!-- 2025-10-31 新增自機添加系統指引 -->
 
+## TL;DR Quick Checklist
 - Search existing work: `openspec spec list --long`, `openspec list` (use `rg` only for full-text search)
 - Decide scope: new capability vs modify existing capability
 - Pick a unique `change-id`: kebab-case, verb-led (`add-`, `update-`, `remove-`, `refactor-`)
@@ -21,6 +22,7 @@ Create proposal when you need to:
 - Change architecture or patterns  
 - Optimize performance (changes behavior)
 - Update security patterns
+- Add new player mechanics/ships
 
 Triggers (examples):
 - "Help me create a change proposal"
@@ -45,6 +47,17 @@ Skip proposal for:
 2. Choose a unique verb-led `change-id` and scaffold `proposal.md`, `tasks.md`, optional `design.md`, and spec deltas under `openspec/changes/<id>/`.
 3. Draft spec deltas using `## ADDED|MODIFIED|REMOVED Requirements` with at least one `#### Scenario:` per requirement.
 4. Run `openspec validate <id> --strict` and resolve any issues before sharing the proposal.
+
+### 自機添加系統特別指引
+1. 新增自機時需同時提供：
+  - 機體設定檔（JSON格式）
+  - 圖像資源（PNG序列幀）
+  - 碰撞體定義
+2. 必須通過資源驗證工具檢查
+  ```bash
+  npx validate-ship ./path/to/ship-config.json
+  ```
+3. 需更新玩家選擇畫面與預覽生成器
 
 ### Stage 2: Implementing Changes
 Track these steps as TODOs and complete them one by one.

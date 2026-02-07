@@ -3,26 +3,34 @@ import type { Cube } from '../types/global';
 /**
  * 等角投影碰撞檢測器
  */
-export class IsometricCollider {
+// 確保正確定義碰撞器類別
+export class IsometricCollider extends Phaser.Physics.Arcade.Sprite {
   public cube: Cube;
   public onCollide: Phaser.Events.EventEmitter = new Phaser.Events.EventEmitter();
 
-  constructor(config: {
+  constructor(
     scene: Phaser.Scene,
     x: number,
     y: number,
     width: number,
     height: number,
-    depth?: number
-  }) {
+    depth: number = 10
+  ) {
+    super(scene, x, y, '');
+    scene.add.existing(this);
+    scene.physics.add.existing(this);
+    
+    // 調整碰撞體參數以匹配實際精靈尺寸
     this.cube = {
-      x: config.x,
-      y: config.y,
+      x: x - width/2,  // 修正X軸中心點
+      y: y - height/2, // 修正Y軸中心點
       z: 0,
-      width: config.width,
-      height: config.height,
-      depth: config.depth || 10 // 預設深度
+      width: width,
+      height: height,
+      depth: depth
     };
+    
+    console.log(`[PhysicsSystem] IsometricCollider created at (${x},${y}) with adjusted size: ${width}x${height}x${depth}`);
   }
 
   /**
@@ -68,42 +76,40 @@ export class IsometricCollider {
 /**
  * 擴展物理系統支持等角投影
  */
-export class PhysicsSystem implements Phaser.Plugins.BasePlugin {
+export class PhysicsSystem extends Phaser.Plugins.BasePlugin {
   private colliders: IsometricCollider[] = [];
   private playerCollider?: IsometricCollider;
 
-  constructor(public scene: Phaser.Scene) {
-    Phaser.Plugins.BasePlugin.call(this, scene.plugins, 'PhysicsSystem');
+  constructor(pluginManager: Phaser.Plugins.PluginManager) {
+    super(pluginManager);
   }
 
   /**
    * 註冊等角碰撞器
+   * @param collider 碰撞器實例
    * @param isPlayer 是否為玩家碰撞器
    */
   addIsometricCollider(collider: IsometricCollider, isPlayer = false): void {
     this.colliders.push(collider);
     if (isPlayer) {
       this.playerCollider = collider;
-    
-      /**
-       * AABB寬階段碰撞檢測
-       */
-      private checkAABB(a: Cube, b: Cube): boolean {
-        return !(
-          a.x > b.x + b.width ||
-          a.x + a.width < b.x ||
-          a.y > b.y + b.height ||
-          a.y + a.height < b.y ||
-          a.z > b.z + b.depth ||
-          a.z + a.depth < b.z
-        );
-      }
     }
   }
-
+  
   /**
-   * 更新碰撞檢測
+   * AABB寬階段碰撞檢測
    */
+  private checkAABB(a: Cube, b: Cube): boolean {
+    return !(
+      a.x > b.x + b.width ||
+      a.x + a.width < b.x ||
+      a.y > b.y + b.height ||
+      a.y + a.height < b.y ||
+      a.z > b.z + b.depth ||
+      a.z + a.depth < b.z
+    );
+  }
+
   /**
    * 更新碰撞檢測與玩家控制狀態
    * @param velocity 玩家當前速度

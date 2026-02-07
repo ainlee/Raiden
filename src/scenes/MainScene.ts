@@ -1,16 +1,28 @@
-import Phaser from 'phaser';
+import * as Phaser from 'phaser';
 import { IsometricCollider } from '../systems/PhysicsSystem';
+import AffineTransform from '../math/AffineTransform';
+import { eventBus } from '../utils/EventBus';
 
 export default class MainScene extends Phaser.Scene {
-  physics!: Phaser.Physics.Arcade.ArcadePhysics;
+  declare physics: Phaser.Physics.Arcade.ArcadePhysics;
   private player!: Phaser.GameObjects.Sprite;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
+  private affineTransform!: AffineTransform;
 
   constructor() {
-    super({ key: 'MainScene' });
+    super({
+      key: 'MainScene',
+      physics: {
+        default: 'arcade',
+        arcade: {
+          debug: true
+        }
+      }
+    });
   }
 
   preload() {
+    console.log('Starting asset loading...');
     // 載入自機資源
     /**
      * 初始化玩家資源載入
@@ -20,9 +32,31 @@ export default class MainScene extends Phaser.Scene {
     const loadPlayerAssets = (playerType: '1P' | '2P', model = '') => {
       const prefix = model ? `Raiden-${model}-${playerType}` : `Raiden-${playerType}`;
       
-      // 載入圖像資源
-      this.load.image(`raiden${playerType}`, `/assets/sprites/${prefix}.png`);
-      this.load.json(`raiden${playerType}Atlas`, `/assets/sprites/${prefix}.json`);
+      // 使用絕對路徑確保載入正確
+      const imagePath = `/assets/players/Raiden-${playerType}/${prefix}.png`;
+      const jsonPath = `/assets/players/Raiden-${playerType}/${prefix}.json`;
+      
+      console.log(`[MainScene] Loading player assets for ${playerType}:`, {imagePath, jsonPath});
+      console.log(`[MainScene] Full image URL: ${this.load.baseURL}${imagePath}`);
+      console.log(`[MainScene] Full json URL: ${this.load.baseURL}${jsonPath}`);
+      
+      // 改用multiatlas載入方式
+      this.load.multiatlas({
+        key: `raiden${playerType}`,
+        atlasURL: jsonPath,
+        path: `/assets/players/Raiden-${playerType}/`
+      });
+      
+      // 添加錯誤處理
+      this.load.on('loaderror', (file: any) => {
+        console.error('[ASSET LOAD ERROR]', file);
+        console.error('[ASSET LOAD ERROR DETAILS]', {
+          key: file.key,
+          url: file.url,
+          responseURL: file.xhr?.responseURL,
+          status: file.xhr?.status
+        });
+      });
     };
 
     // 初始化預設機體 (1P/2P)
@@ -31,29 +65,42 @@ export default class MainScene extends Phaser.Scene {
   }
 
   create() {
+    // 初始化仿射變換系統
+    this.affineTransform = new AffineTransform();
+    this.affineTransform.setCameraTilt(35, new Phaser.Math.Vector2(0.1, 0.05));
+    
+    // 註冊開發者事件監聽
+    eventBus.on('TOGGLE_INVINCIBILITY', () => this.toggleInvincibility());
+    
+    // 初始化高度圖解析器
+    
     // 啟用物理系統
-    this.physics = this.physics;
+    // 初始化物理系統
+    console.log('Initializing physics system...');
     this.physics.world.setBounds(0, 0, 800, 600);
-
+    
     // 初始化等角投影系統
     if (this.input.keyboard) {
       this.cursors = this.input.keyboard.createCursorKeys();
     }
 
     // 建立玩家戰機
-    // 初始化玩家與物理系統
     this.player = this.add.sprite(400, 300, 'raiden1P');
-    this.physics.add.existing(this.player);
-    (this.player.body as Phaser.Physics.Arcade.Body).setCollideWorldBounds(true);
     
-    // 註冊玩家碰撞器
-    const playerCollider = new IsometricCollider({
-      scene: this,
-      x: this.player.x,
-      y: this.player.y,
-      width: this.player.width,
-      height: this.player.height
-    });
+    // 添加玩家物理實體
+    this.physics.add.existing(this.player);
+    const body = this.player.body as Phaser.Physics.Arcade.Body;
+    body.setCollideWorldBounds(true);
+    body.setSize(24, 24, true); // 調整碰撞體中心點
+    
+    // 註冊玩家碰撞器 - 確保正確導入
+    const playerCollider = new IsometricCollider(
+      this,
+      this.player.x,
+      this.player.y,
+      24,
+      24
+    );
     this.physics.addIsometricCollider(playerCollider, true);
     
     // 監聽碰撞事件
@@ -80,5 +127,12 @@ export default class MainScene extends Phaser.Scene {
     } else if (this.cursors.down?.isDown) {
       body.setVelocityY(speed);
     }
+  }
+
+  // 開發者功能：切換無敵模式
+  toggleInvincibility() {
+    const body = this.player.body as Phaser.Physics.Arcade.Body;
+    body.checkCollision.none = !body.checkCollision.none;
+    console.log(`無敵模式 ${body.checkCollision.none ? '關閉' : '開啟'}`);
   }
 }
