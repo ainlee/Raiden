@@ -23,30 +23,20 @@ export default class MainScene extends Phaser.Scene {
 
   preload() {
     console.log('Starting asset loading...');
-    // 載入自機資源
-    /**
-     * 初始化玩家資源載入
-     * @param {string} playerType - 玩家類型 (1P/2P)
-     * @param {string} model - 自機型號 (預設空值)
-     */
+
+    // 載入自機資源 - 使用 image 載入方式
     const loadPlayerAssets = (playerType: '1P' | '2P', model = '') => {
       const prefix = model ? `Raiden-${model}-${playerType}` : `Raiden-${playerType}`;
-      
-      // 使用絕對路徑確保載入正確
-      const imagePath = `/assets/players/Raiden-${playerType}/${prefix}.png`;
-      const jsonPath = `/assets/players/Raiden-${playerType}/${prefix}.json`;
-      
-      console.log(`[MainScene] Loading player assets for ${playerType}:`, {imagePath, jsonPath});
+
+      // 使用 image 載入
+      const imagePath = `/assets/players-phaser/${playerType}/${prefix}.png`;
+
+      console.log(`[MainScene] Loading player assets for ${playerType}:`, {imagePath});
       console.log(`[MainScene] Full image URL: ${this.load.baseURL}${imagePath}`);
-      console.log(`[MainScene] Full json URL: ${this.load.baseURL}${jsonPath}`);
-      
-      // 改用multiatlas載入方式
-      this.load.multiatlas({
-        key: `raiden${playerType}`,
-        atlasURL: jsonPath,
-        path: `/assets/players/Raiden-${playerType}/`
-      });
-      
+
+      // 使用 image 載入
+      this.load.image(`raiden${playerType}`, imagePath);
+
       // 添加錯誤處理
       this.load.on('loaderror', (file: any) => {
         console.error('[ASSET LOAD ERROR]', file);
@@ -68,17 +58,14 @@ export default class MainScene extends Phaser.Scene {
     // 初始化仿射變換系統
     this.affineTransform = new AffineTransform();
     this.affineTransform.setCameraTilt(35, new Phaser.Math.Vector2(0.1, 0.05));
-    
+
     // 註冊開發者事件監聽
     eventBus.on('TOGGLE_INVINCIBILITY', () => this.toggleInvincibility());
-    
-    // 初始化高度圖解析器
-    
+
     // 啟用物理系統
-    // 初始化物理系統
     console.log('Initializing physics system...');
     this.physics.world.setBounds(0, 0, 800, 600);
-    
+
     // 初始化等角投影系統
     if (this.input.keyboard) {
       this.cursors = this.input.keyboard.createCursorKeys();
@@ -86,14 +73,14 @@ export default class MainScene extends Phaser.Scene {
 
     // 建立玩家戰機
     this.player = this.add.sprite(400, 300, 'raiden1P');
-    
+
     // 添加玩家物理實體
     this.physics.add.existing(this.player);
     const body = this.player.body as Phaser.Physics.Arcade.Body;
     body.setCollideWorldBounds(true);
     body.setSize(24, 24, true); // 調整碰撞體中心點
-    
-    // 註冊玩家碰撞器 - 確保正確導入
+
+    // 註冊玩家碰撞器 - 簡化版本
     const playerCollider = new IsometricCollider(
       this,
       this.player.x,
@@ -101,12 +88,13 @@ export default class MainScene extends Phaser.Scene {
       24,
       24
     );
-    this.physics.addIsometricCollider(playerCollider, true);
-    
+
     // 監聽碰撞事件
     playerCollider.onCollide.on('collide', (other: IsometricCollider) => {
       console.log('Player collided with object at:', other.cube);
     });
+
+    console.log('MainScene created successfully!');
   }
 
   update() {

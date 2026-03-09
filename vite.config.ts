@@ -1,9 +1,20 @@
 import { defineConfig } from 'vite'
 import { resolve } from 'path'
-import react from '@vitejs/plugin-react'
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    {
+      name: 'react-jsx',
+      transform(code, id) {
+        if (id.endsWith('.jsx') || id.endsWith('.tsx')) {
+          return {
+            code: code.replace(/React\.createElement/g, 'h'),
+            map: null
+          }
+        }
+      }
+    }
+  ],
   base: '/',
   build: {
     outDir: 'dist',
@@ -19,7 +30,7 @@ export default defineConfig({
   },
   server: {
     hmr: true,
-    open: '/',
+    open: true,
     port: 5173
   },
   preview: {
@@ -28,6 +39,11 @@ export default defineConfig({
   optimizeDeps: {
     esbuildOptions: {
       target: 'esnext'
+    }
+  },
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, './src')
     }
   }
 })

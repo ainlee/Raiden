@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import MainMenuScene from './scenes/MainMenuScene';
 import MainScene from './scenes/MainScene';
 import TestLevel from './scenes/TestLevel';
 import React from 'react';
@@ -11,7 +12,7 @@ const config: Phaser.Types.Core.GameConfig = {
   parent: 'game-container',
   width: 800,
   height: 600,
-  scene: [MainScene, TestLevel],
+  scene: [MainMenuScene, MainScene, TestLevel],
   physics: {
     default: 'arcade',
     arcade: {
