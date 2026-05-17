@@ -1,0 +1,12 @@
+{
+	"mcpServers": {
+		"gitnexus": {
+			"command": "gitnexus",
+			"args": [
+				"mcp"
+			],
+			"disabled": false,
+			"alwaysAllow": []
+		}
+	}
+}
